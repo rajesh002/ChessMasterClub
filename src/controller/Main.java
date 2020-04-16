@@ -13,14 +13,14 @@ import dao.UserDAO;
 public class Main {
 
 	public static void main(String[] args) throws Exception {
-		int role,adminChoice,playerAge,playerTournamentId;
+		int role,adminChoice,playerAge,playerTournamentId,playerId,noOfWins,noOfLosses;
 		String username,password,confirmPassword,adminDecision,tournamentName,playerName,playerEmail;
 		LocalDate startDate,endDate;
 		boolean detailsExist=false;
+		//Creating objects
 		BufferedReader br=new BufferedReader(new InputStreamReader(System.in));
 		
 		
-		//Creating objects
 		UserDAO userdao= new UserDAO();
 		TournamentOperations tournamentOperations=new TournamentOperations();
 		PlayerOperations playeroperations=new PlayerOperations();
@@ -57,8 +57,8 @@ public class Main {
 				System.out.println("	2.Add player to tournament");
 				System.out.println("	3.Record win to player    ");
 				System.out.println("	4.Record loss to player   ");
-				System.out.println("	5.View Best in tournament ");
-				System.out.println("	6.View PlayerWithMostWins ");
+				System.out.println("	5.View BestPlayer in tournament ");
+			//	System.out.println("	6.Tournament ");
 				adminChoice=Integer.parseInt(br.readLine());
 				switch(adminChoice) {
 							
@@ -82,15 +82,43 @@ public class Main {
 						playerEmail=br.readLine();
 						System.out.println("Enter the player tournament id");
 						playerTournamentId=Integer.parseInt(br.readLine());
-						playeroperations.addNewPlayer(playerName, playerAge, playerEmail, playerTournamentId);
+						System.out.println(tournamentOperations.tournamentNotEnded(playerTournamentId));
+						if(tournamentOperations.tournamentNotEnded(playerTournamentId)) {
+							playeroperations.addNewPlayer(playerName, playerAge, playerEmail, playerTournamentId);
+							playeroperations.displayPlayers();
+						}
+						else
+							System.out.println("Sorry,the tournament was ended");
 						break;
 					case 3:
-						playeroperations.displayPlayers();
+						tournamentOperations.displayTournaments();
+						System.out.println("Select tournament which player you want to record wins");
+						playerTournamentId=Integer.parseInt(br.readLine());
+						playeroperations.displayPlayers(playerTournamentId);
+						System.out.println("select player which you want to add wins");
+						playerId=Integer.parseInt(br.readLine());
+						System.out.println("How many wins you want to add ?");
+						noOfWins=Integer.parseInt(br.readLine());
+						playeroperations.addWins(playerId, noOfWins);
+						playeroperations.displayPlayers(playerTournamentId);
 						break;
 					case 4:
 						tournamentOperations.displayTournaments();
+						System.out.println("Select tournament which player you want to record loss");
+						playerTournamentId=Integer.parseInt(br.readLine());
+						playeroperations.displayPlayers(playerTournamentId);
+						System.out.println("select player which you want to add loss");
+						playerId=Integer.parseInt(br.readLine());
+						System.out.println("How many Losses you want to add ?");
+						noOfLosses=Integer.parseInt(br.readLine());
+						playeroperations.addLosses(playerId, noOfLosses);
+						playeroperations.displayPlayers(playerTournamentId);
 						break;
 					case 5:
+						tournamentOperations.displayTournaments();
+						System.out.println("Enter the tournament id");
+						playerTournamentId=Integer.parseInt(br.readLine());
+						playeroperations.bestPlayer(playerTournamentId);
 						break;
 					case 6:
 						break;
@@ -107,8 +135,8 @@ public class Main {
 			
 			
 			
-			
 		}
+		
 		
 		
 

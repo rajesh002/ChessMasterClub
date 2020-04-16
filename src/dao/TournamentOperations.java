@@ -26,12 +26,32 @@ public class TournamentOperations implements TournamentDAOInterface {
 		pstmt.executeUpdate();
 	}
 	
+	
+	public boolean tournamentNotEnded(int id) throws Exception {
+		LocalDate today=LocalDate.now();
+		LocalDate endDate;
+		Connection con=ConnectionManager.getConnection();
+		PreparedStatement pstmt = con.prepareStatement("select end_date from tournament where id="+id);
+		ResultSet rs = pstmt.executeQuery();
+		rs.next();
+		endDate=rs.getDate("end_date").toLocalDate();
+		return (today.compareTo(endDate) <= 0); 
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	//Displaying Tournaments Data
 	public void displayTournaments() throws Exception{
 		Connection con=ConnectionManager.getConnection();
 		PreparedStatement pstmt = con.prepareStatement("select * from tournament");
 		ResultSet rs = pstmt.executeQuery();
-		System.out.printf("ID                   NAME             STARTDATE        ENDDATE %n");
+		System.out.printf("TOURNAMENT_ID        NAME             STARTDATE        ENDDATE %n");
 		while (rs.next()) {
             int id = rs.getInt("id");
             String name = rs.getString("name");
