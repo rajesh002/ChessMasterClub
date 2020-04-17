@@ -24,9 +24,10 @@ public class TournamentOperations implements TournamentDAOInterface {
 		pstmt.setDate(2,Date.valueOf(tournament.getStartDate()));
 		pstmt.setDate(3,Date.valueOf(tournament.getEndDate()));
 		pstmt.executeUpdate();
+		con.close();
 	}
 	
-	
+	// checking tournament ended or not
 	public boolean tournamentNotEnded(int id) throws Exception {
 		LocalDate today=LocalDate.now();
 		LocalDate endDate;
@@ -35,14 +36,10 @@ public class TournamentOperations implements TournamentDAOInterface {
 		ResultSet rs = pstmt.executeQuery();
 		rs.next();
 		endDate=rs.getDate("end_date").toLocalDate();
+		con.close();
 		return (today.compareTo(endDate) <= 0); 
+		
 	}
-	
-	
-	
-	
-	
-	
 	
 	
 	
@@ -51,15 +48,16 @@ public class TournamentOperations implements TournamentDAOInterface {
 		Connection con=ConnectionManager.getConnection();
 		PreparedStatement pstmt = con.prepareStatement("select * from tournament");
 		ResultSet rs = pstmt.executeQuery();
-		System.out.printf("TOURNAMENT_ID        NAME             STARTDATE        ENDDATE %n");
+		System.out.printf("TOURNAMENT_ID               NAME              STARTDATE       ENDDATE %n");
 		while (rs.next()) {
             int id = rs.getInt("id");
             String name = rs.getString("name");
             LocalDate startDate=rs.getDate("start_date").toLocalDate();
             LocalDate endDate=rs.getDate("end_date").toLocalDate();
-            System.out.printf("%-15d %15s %15s %15s %n",id,name,startDate,endDate);
+            System.out.printf("%-15d %23s %15s %15s %n",id,name,startDate,endDate);
             
          }
+		con.close();
 	}
 	
 }

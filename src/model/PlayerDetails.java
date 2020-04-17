@@ -2,13 +2,13 @@ package model;
 
 public class PlayerDetails {
 	String name;
-	String email;
+	String place;
 	int age;
 	int tournamentId;
-	public PlayerDetails(String name, String email, int age, int tournamentId) {
+	public PlayerDetails(String name, String place, int age, int tournamentId) {
 		super();
 		this.name = name;
-		this.email = email;
+		this.place=place;
 		this.age = age;
 		this.tournamentId = tournamentId;
 	}
@@ -18,11 +18,11 @@ public class PlayerDetails {
 	public void setName(String name) {
 		this.name = name;
 	}
-	public String getEmail() {
-		return email;
+	public String getPlace() {
+		return place;
 	}
-	public void setEmail(String email) {
-		this.email = email;
+	public void setPlace(String place) {
+		this.place=place;
 	}
 	public int getAge() {
 		return age;
