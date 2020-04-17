@@ -43,7 +43,6 @@ public class Main {
 				if(userdao.admin(username,password)) {    //Checking the entered user admin or not
 					detailsExist=true;
 					System.out.println("	Admin Login Sucessfully		");
-					System.out.println("	Admin Operations");
 					System.out.println("_________________________________________");
 				}
 				else
@@ -142,10 +141,10 @@ public class Main {
 						break;
 				}
 				
-				
-				System.out.println("Are you want to continue : yes/no");
+				System.out.println("_________________________________________");
+				System.out.println("Are you want to continue : YES/NO");
 				adminDecision=br.readLine();		
-			}while(adminDecision.equals("yes"));
+			}while(adminDecision.equals("yes") || adminDecision.equals("Yes"));
 		System.out.println("Thank you!");	
 		}
 		
@@ -189,11 +188,17 @@ public class Main {
 				else
 					System.out.println("Invalid userdetails");
 			}while(!detailsExist);	
-			
-		  System.out.println("Enter the date to display tournaments");
-		  LocalDate date = LocalDate.parse(br.readLine());
-		  userdao.displayPlayersOfTournament(date);
+		  String userDecision;
+		do {
+			  System.out.println("Enter the date to display tournaments");
+			  LocalDate date = LocalDate.parse(br.readLine());
+			  userdao.displayPlayersOfTournament(date);
+			  System.out.println("_________________________________________");
+			  System.out.println("Are you want to continue : YES/NO");
+			  userDecision=br.readLine();		
+		  	  }while(userDecision.equals("yes") || userDecision.equals("Yes"));
+		  System.out.println("Thank you!");	
 		}
-
 	}
 }
+
