@@ -1,12 +1,8 @@
 package dao;
 
 import java.sql.Connection;
-
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.time.LocalDate;
-
 import model.PlayerDetails;
 import services.PlayerDAOInterface;
 import utility.ConnectionManager;
@@ -143,10 +139,110 @@ public class PlayerOperations implements PlayerDAOInterface {
 			return true;
 	}
 }
+	
+	
+	
+	// Records player details for request to the tournament
+	
+	public void requestToParticipate(String playerName, int playerAge, String playerCity,String username,String password) throws Exception {
+		Connection con=ConnectionManager.getConnection();
+		PreparedStatement pstmt2 = con.prepareStatement("select id from logindata where username=? and password=?");
+		pstmt2.setString(1, username);//rs.getInt("id"));
+		pstmt2.setString(2, password);
+		ResultSet rs=pstmt2.executeQuery();
+		rs.next();
+		
+		PreparedStatement pstmt = con.prepareStatement("insert into requests(id,name,age,place,status) values(?,?,?,?,?)");
+		pstmt.setInt(1, rs.getInt("id"));
+		pstmt.setString(2, playerName);
+		pstmt.setInt(3, playerAge);
+		pstmt.setString(4, playerCity);
+		pstmt.setString(5, "Pending");
+		pstmt.executeUpdate();
+		con.close();
+	}
+	
+	
+	
+	
+	
+	//Displaying all pending requests
+	
+	public void displayPendingRequests() throws Exception {
+		Connection con=ConnectionManager.getConnection();
+		PreparedStatement pstmt = con.prepareStatement("select * from requests where status=?");
+		pstmt.setString(1, "Pending");
+		ResultSet rs = pstmt.executeQuery();
+		System.out.printf("PLAYER_ID                  NAME             AGE             PLACE %n");
+		while (rs.next()) {
+	        int id = rs.getInt("id");
+	        String name = rs.getString("name");
+	        int age=rs.getInt("age");
+	        String place=rs.getString("place");
+	        System.out.printf("%-15d %15s %15d %15s %n",id,name,age,place);
+	     }
+		con.close();
 }
 	
 	
 	
+	// Accepting request from the user
+	
+	public void acceptRequestAddPlayer(int requestId, int playerTournamentId) throws Exception {
+		Connection con=ConnectionManager.getConnection();
+		PreparedStatement pstmt = con.prepareStatement("select * from requests where id="+requestId);
+		ResultSet rs= pstmt.executeQuery();
+		rs.next();
+		
+		
+		if(addNewPlayer(rs.getString(2), rs.getInt(3), rs.getString(4), playerTournamentId)==true) {
+			displayPlayers(playerTournamentId);
+			PreparedStatement pstmt1 = con.prepareStatement("update requests set status=? where id="+requestId);
+			pstmt1.setString(1, "Completed");
+			pstmt1.executeUpdate();
+		}
+		else
+			System.out.println("Sorry! Result announced ,No players can be added");
+		con.close();
+	 }
+
+	
+	
+	// All existing requests status 
+	
+	public boolean requestExists(String username, String password) throws Exception {
+		Connection con=ConnectionManager.getConnection();
+		PreparedStatement pstmt2 = con.prepareStatement("select id from logindata where username=? and password=?");
+		pstmt2.setString(1, username);//rs.getInt("id"));
+		pstmt2.setString(2, password);
+		ResultSet rs=pstmt2.executeQuery();
+		rs.next();
+		
+		PreparedStatement pstmt = con.prepareStatement("select * from requests where requests.id="+rs.getInt("id"));
+		ResultSet rs1= pstmt.executeQuery();
+		
+		boolean status = rs1.next();
+		
+		 if(status==false) {
+			 con.close();
+			 return false;
+		 }
+		 else {
+				PreparedStatement pstmt1 = con.prepareStatement("select status from requests where id="+rs.getInt("id"));
+				ResultSet rs2= pstmt1.executeQuery();
+				rs2.next();
+				if(rs2.getString("status").equals("Pending")) {
+					System.out.println("Your Request is in Pending");
+					return true;
+				}
+				else {
+					System.out.println("Your Request has accepted");
+					con.close();
+					return true;
+				}
+		 }
+	}
+  }
 	
 	
 	

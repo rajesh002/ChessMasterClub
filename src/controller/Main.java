@@ -17,10 +17,10 @@ public class Main {
 		String username,password,confirmPassword,adminDecision,tournamentName,playerName,playerCity;
 		LocalDate startDate,endDate;
 		boolean detailsExist=false;
-		//Creating objects
+		
 		BufferedReader br=new BufferedReader(new InputStreamReader(System.in));
 		
-		
+		//Creating objects
 		UserDAO userdao= new UserDAO();
 		TournamentOperations tournamentOperations=new TournamentOperations();
 		PlayerOperations playeroperations=new PlayerOperations();
@@ -33,7 +33,7 @@ public class Main {
 		role=Integer.parseInt(br.readLine());
 		
 		
-		// Admin login
+								// Admin login
 		if(role==1) {
 			do {
 				System.out.println("Enter Your Username: ");
@@ -47,24 +47,25 @@ public class Main {
 				}
 				else
 					System.out.println("Invalid userdetails");
-			}while(!detailsExist);	
+				}while(!detailsExist);	
 			
 			
-			// Admin Operations
+									// Admin Operations
 			
 			
 			do {
-				System.out.println("	1.Add tournament to club   ");
+				System.out.println("	1.Add tournament to club");
 				System.out.println("	2.Add player to tournament");
-				System.out.println("	3.Record Win to player    ");
-				System.out.println("	4.Record Lose to player   ");
-				System.out.println("	5.Make As Tournament Winner"); //View BestPlayer in tournament ");
+				System.out.println("	3.Record Win to player");
+				System.out.println("	4.Record Lose to player");
+				System.out.println("	5.Make As Tournament Winner"); 
 				System.out.println("	6.View All Tournaments");
+				System.out.println("	7.Pending requests from the users");
 				adminChoice=Integer.parseInt(br.readLine());
 				switch(adminChoice) {
 							
 					case 1:
-						//Adding New Tournaments
+								//Adding New Tournaments
 						System.out.println("Enter the tournament name");
 						tournamentName=br.readLine();
 						System.out.println("Enter start date of tournament");
@@ -75,6 +76,7 @@ public class Main {
 						tournamentOperations.displayTournaments();
 						break;
 					case 2:
+								//Adding players to tournaments
 						tournamentOperations.displayTournaments();
 						System.out.println("Enter the player tournament id");
 						playerTournamentId=Integer.parseInt(br.readLine());
@@ -95,6 +97,7 @@ public class Main {
 						}
 						break;
 					case 3:
+								//Add wins to player
 						tournamentOperations.displayTournaments();
 						System.out.println("Select tournament which player you want to record wins");
 						playerTournamentId=Integer.parseInt(br.readLine());
@@ -107,6 +110,7 @@ public class Main {
 						playeroperations.displayPlayers(playerTournamentId);
 						break;
 					case 4:
+								//Add losses to player
 						tournamentOperations.displayTournaments();
 						System.out.println("Select tournament which player you want to record loss");
 						playerTournamentId=Integer.parseInt(br.readLine());
@@ -119,6 +123,7 @@ public class Main {
 						playeroperations.displayPlayers(playerTournamentId);
 						break;
 					case 5:
+							//Record player as winner with highest wins in the tournament
 						tournamentOperations.displayTournaments();
 						System.out.println("Enter the tournament id");
 						playerTournamentId=Integer.parseInt(br.readLine());
@@ -128,20 +133,26 @@ public class Main {
 							System.out.println("Sucessfully Recored final winner of tournament");
 						break;
 					case 6:
+							//Displaying tournaments list
 						tournamentOperations.displayTournaments();
 						break;
-//						tournamentOperations.displayTournaments();
-//						System.out.println("Enter the tournament id");
-//						playerTournamentId=Integer.parseInt(br.readLine());
-//						playeroperations.bestPlayer(playerTournamentId);
-//						break;
 					case 7:
-						playerTournamentId=Integer.parseInt(br.readLine());
-						playeroperations.displayPlayers(playerTournamentId);
+							//Pending requests by the users
+						playeroperations.displayPendingRequests();
+						System.out.println("1.Do you want to add requested players\n2.Exit");
+						int request = Integer.parseInt(br.readLine());
+						if(request == 1) {
+							System.out.println("Enter requestID to add");
+							int requestId = Integer.parseInt(br.readLine());
+							tournamentOperations.displayTournaments();
+							System.out.println("Enter the tournament id");
+							playerTournamentId=Integer.parseInt(br.readLine());
+							playeroperations.acceptRequestAddPlayer(requestId,playerTournamentId);
+						}					
 						break;
 				}
 				
-				System.out.println("_________________________________________");
+				System.out.println("________________________________________________________________________________________________");
 				System.out.println("Are you want to continue : YES/NO");
 				adminDecision=br.readLine();		
 			}while(adminDecision.equals("yes") || adminDecision.equals("Yes"));
@@ -187,18 +198,48 @@ public class Main {
 				}
 				else
 					System.out.println("Invalid userdetails");
-			}while(!detailsExist);	
-		  String userDecision;
-		do {
-			  System.out.println("Enter the date to display tournaments");
-			  LocalDate date = LocalDate.parse(br.readLine());
-			  userdao.displayPlayersOfTournament(date);
+				}while(!detailsExist);	
+				String userDecision;
+				do {
+				  System.out.println("1.Display Tournament Winners");
+				  System.out.println("2.Request to join tournament/Check your request");
+				  System.out.println("3.Exit");
+				  int userChoice = Integer.parseInt(br.readLine());
+				  switch(userChoice) {
+				  	case 1:
+				  		System.out.println("Enter the date to display tournaments :");
+				  		LocalDate date = LocalDate.parse(br.readLine());
+				  		if(tournamentOperations.displayPlayersOfTournament(date)==false)
+				  			System.out.println("No tournament occured");
+				  		break;
+				  	case 2:
+				  		if(playeroperations.requestExists(username,password)==false) {
+				  			System.out.println("You are not request to join tournament club.\nPlease enter details to send request ");
+				  			System.out.println("_________________________________________");
+				  			System.out.println("Enter your player name");
+							playerName=br.readLine();
+							System.out.println("Enter your player age");
+							playerAge=Integer.parseInt(br.readLine());
+							System.out.println("Enter your city");
+							playerCity=br.readLine();
+							playeroperations.requestToParticipate(playerName,playerAge,playerCity,username,password);
+							System.out.println("Thank you,Your request as been verified shortly");
+				  		}
+				  		break;
+				  	case 3:
+				  		System.out.println("Thank you!");	
+				  		System.exit(0);
+				  		break;
+				  }	
+					
+					
 			  System.out.println("_________________________________________");
 			  System.out.println("Are you want to continue : YES/NO");
 			  userDecision=br.readLine();		
 		  	  }while(userDecision.equals("yes") || userDecision.equals("Yes"));
 		  System.out.println("Thank you!");	
 		}
+		
 	}
 }
 
